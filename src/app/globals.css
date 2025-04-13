@@ -22,3 +22,19 @@ body {
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.Title {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  color: #b8bbc0; /* text-gray-900 */
+}
+
+.post {
+  font-size: 1rem;
+  line-height: 1.75;
+  color: #7d7e83; /* text-gray-800 */
+  padding: 1rem;
+  /* background-color: #f0fff4; light green */
+  border-radius: 0.5rem;
+}
