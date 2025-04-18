@@ -36,9 +36,6 @@ export default function Blog({idx=0}) {
     <div className="grid grid-cols-7">
         <Header className="flex col-span-7"/>
         <div className="col-span-5 col-start-1 p-4 text-white">
-            {/* <h1>Latest Post</h1> */}
-            {/* <p>{posts ? posts[idx].file : "No posts found"}</p> */}
-            {/* <div/> */}
             <div dangerouslySetInnerHTML={{ __html: posts[idx].content }} />
         </div>
         <div className="col-span-2 col-start-6 p-4 text-white">
