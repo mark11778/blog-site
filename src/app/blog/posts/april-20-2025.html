@@ -1,0 +1,71 @@
+
+<div>
+    <h1 class="Title">text to speech reader</h1>
+    <p class="post">
+
+        for context this semester i am in OS which has a wonderful textbook OSTEP. unfortunately for me the book is really good and a better use of my time than the content that is covered in lecture. so this leaves me will a large amount of reading that i need to complete. generally when i read i use a audio book or something of that sort. i have used some other software before, and either found the UI to be really clunky to use, or the subscription was too expensive … cough cough speechify. so that left me with few options so i am working on come up with something myself.<br>
+
+        <br>
+        
+        the way i see it there is two aspects to writing a program that solves my needs:<br>
+        <br>
+        1. need to be able to extract this data - starting as this is mainly for the use of textbooks, parse a pdf will be the main focus<br>
+        <br>
+        2. the speech part preferably something that does not sound awful and it’s pronunciation is mostly correct<br>
+        <br>
+        first attempt, i threw together some simple code in python to effectively read a pdf, start reading and generate the audio. this first version worked, but definitely has its flaws. i think the easier problem to start with would be parsing the pdf to get the right data. which turns out this is a little bit problematic. 
+        <br>
+        after some more research these are my findings. so pdfs store data based on there visual representation, not based on the context. you might ask wtf does that even mean, so bare with me. something like an html or doc file contains the data in a format that keeps information related to font, size, line spacing and so on. here as a pdf just sorts the coordinates and content.<br>
+        so, a sequence like “Hello World!”, would have coordinates for each letter (“H”, “e”, “l” …) and notably the space is not stored just the following “W” coordinates are further to the right. from this is hard to accuraceny parse an pdf file correctly, because of the missing data of the spaces,  which leads to missing or additional spaces like my example below:<br>
+        <br>
+        Raw output of PyPDF2:<br>
+        Locality and The Fast File System When the U NIXoperating system was ﬁrst introduced, the U NIXwizard himself Ken Thompson wrote the ﬁrst ﬁle system. Let’s call that th e “old UNIXﬁle system”, and it was really simple. Basically, its data st ructures looked like this on the disk: S Inodes Data The super block (S) contained information about the entire ﬁle syst em: how big the volume is, how many inodes there are, a pointer to the hea d of a free list of blocks, and so forth. The inode region of the disk conta ined all the inodes for the ﬁle system. Finally, most of the disk was tak en up by data blocks. The good thing about the old ﬁle system was that it was simple, and supported the basic abstractions the ﬁle system was trying to d eliver: ﬁles and the directory hierarchy. This easy-to-use system was a rea l step for- ward from the clumsy, record-based storage systems of the past, a nd the directory hierarchy was a true advance over simpler, one-level hierarchies provided by earlier systems. 41.1 The Problem: Poor Performance The problem: performance was terrible. As measured by Kirk McK u- sick and his colleagues at Berkeley [MJLF84], performance sta rted off bad and got worse over time, to the point where the ﬁle system was deliv ering only 2% of overall disk bandwidth!<br>
+        <br>
+        actual:<br>
+        <Image 
+            src="\images\posts\Screenshot 2025-04-20 192709.png"     
+          />
+        <br>
+        you can see that there are places where spaces are added and some are removed, when parsing the data in the pdf file. i need the data to be as accurate as i can get it to pass to the reader, along with it also being a common practice to just scan a pdf, which is just effectively storing an img as pdf (meaning it does not even have coordinates of the letters), i decided to try a different way to extract the text data in the files. <br>
+        <br>
+        because i am interested in an high level or accuracy but not efficiency, i looked into implementing OCR(Optical Character Recognition). the idea behind this algorithm is to effectively give it an image(in this case a page of the pdf), and convert the visual letters into real characters to pass to the reader. this algorithm has it’s negatives of course, but i think this application would be pretty good. for a high level of accuracy we need the pdf to have a high resolution and not be too fuzzy. and fortunately there is open source software to help us out. firstly we need to convert the pdf into images to pass to the OCR, we can do this with Poppler, which is a pdf rendering engine, which is pretty self explanatory on why it is needed. along with Poppler we need Tesseract OCR, which will be our way for extracting the data of the characters. with this implementation you can see the high level of accuracy. <br>
+        <br>
+        first ORC implementation:<br>
+        time elapsed: 25.958308935165405 s<br>
+        Locality and The Fast File System<br>
+        <br>
+        When the UNIX operating system was first introduced, the UNIX wizard<br>
+        himself Ken Thompson wrote the first file system. Let’s call that the “old<br>
+        UNIX file system”, and it was really simple. Basically, its data structures<br>
+        looked like this on the disk:<br>
+        <br>
+        S| Inodes Data<br>
+        <br>
+        The super block (S) contained information about the entire file system:<br>
+        how big the volume is, how many inodes there are, a pointer to the head<br>
+        of a free list of blocks, and so forth. The inode region of the disk contained<br>
+        all the inodes for the file system. Finally, most of the disk was taken up<br>
+        by data blocks.<br>
+        <br>
+        The good thing about the old file system was that it was simple, and<br>
+        supported the basic abstractions the file system was trying to deliver: files<br>
+        and the directory hierarchy. This easy-to-use system was a real step for-<br>
+        ward from the clumsy, record-based storage systems of the past, and the<br>
+        directory hierarchy was a true advance over simpler, one-level hierarchies<br>
+        provided by earlier systems.<br>
+        <br>
+        41.1 The Problem: Poor Performance<br>
+        <br>
+        The problem: performance was terrible. As measured by Kirk McKu-<br>
+        sick and his colleagues at Berkeley [MJLF84], performance started off bad<br>
+        and got worse over time, to the point where the file system was delivering<br>
+        only 2% of overall disk bandwidth!<br>
+        <br>
+        notably this takes quite a bit longer ~26s, but the accuracy is much better. and for future versions this processing time can be optimized with paralizism. as that is how long it takes to do all 16 pages, which are processed one at a time, thus we should be able to parse these pages independently and join their contents together at the end.
+        <br>
+        next problem, the figures, there are quite a few figures of memory diagrams and what not in the OSTEP textbook, which is more or less going to be impossible to accurately parse. so the best solution is just to remove them(don’t tell remzi or andrea but i normally skip them anyways…). which we have two options to do this, either we can ignore them when we are first parsing them or remove them after. the former option effectively finds a way to avoid duplication work(parsing it in just to remove it) so i will try implementing that one first. 
+        
+
+    </p>
+    
+</div>
